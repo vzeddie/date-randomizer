@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: date-randomizer-ingress
+  namespace: default
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    cert-manager.io/cluster-issuer: letsencrypt-cert
+    traefik.ingress.kubernetes.io/router.middlewares: ""
+spec:
+  rules:
+  - host: date-randomizer.vzeddie.net  # Replace with your desired subdomain
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: idea-randomizer-service  # This should match the name in your k8s-service.yaml
+            port:
+              number: 80  # This should match the port in your k8s-service.yaml
+  tls:
+  - hosts:
+    - date-randomizer.vzeddie.net  # Replace with your desired subdomain
+    secretName: date-randomizer-tls

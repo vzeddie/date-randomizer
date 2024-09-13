@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Paper, Typography, TextField, Button, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
+import { Add } from '@mui/icons-material';
 
 function AddDateForm({ addDate }) {
   const [category, setCategory] = useState('');
@@ -15,7 +16,7 @@ function AddDateForm({ addDate }) {
   };
 
   return (
-    <Paper elevation={3} sx={{ p: 2 }}>
+    <Paper elevation={3} sx={{ p: 3 }}>
       <Typography variant="h5" gutterBottom>Add New Date Idea</Typography>
       <form onSubmit={handleSubmit}>
         <FormControl fullWidth sx={{ mb: 2 }}>
@@ -24,6 +25,12 @@ function AddDateForm({ addDate }) {
             <MenuItem value="Romantic">Romantic</MenuItem>
             <MenuItem value="Adventure">Adventure</MenuItem>
             <MenuItem value="Relaxing">Relaxing</MenuItem>
+            <MenuItem value="Movie/TV Show">Movie/TV Show</MenuItem>
+            <MenuItem value="Culture">Culture</MenuItem>
+            <MenuItem value="Random">Random</MenuItem>
+            <MenuItem value="Food">Food</MenuItem>
+            <MenuItem value="Music">Music</MenuItem>
+            <MenuItem value="Shopping">Shopping</MenuItem>
           </Select>
         </FormControl>
         <TextField
@@ -34,8 +41,17 @@ function AddDateForm({ addDate }) {
           required
           sx={{ mb: 2 }}
         />
-        <Button type="submit" variant="contained" color="primary">
-          Add Date Idea
+        <Button 
+          type="submit" 
+          variant="contained" 
+          color="primary" 
+          startIcon={<Add />}
+          sx={{ 
+            borderRadius: 20,
+            px: 3,
+          }}
+        >
+          Add Idea
         </Button>
       </form>
     </Paper>

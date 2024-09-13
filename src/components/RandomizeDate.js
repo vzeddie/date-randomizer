@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Paper, Typography, Button, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
+import { Casino } from '@mui/icons-material';
 
 function RandomizeDate({ dates, onRandomize }) {
   const [category, setCategory] = useState('All');
@@ -9,7 +10,7 @@ function RandomizeDate({ dates, onRandomize }) {
   };
 
   return (
-    <Paper elevation={3} sx={{ p: 2, mt: 3 }}>
+    <Paper elevation={3} sx={{ p: 3 }}>
       <Typography variant="h5" gutterBottom>Randomize Date</Typography>
       <FormControl fullWidth sx={{ mb: 2 }}>
         <InputLabel>Category</InputLabel>
@@ -18,9 +19,24 @@ function RandomizeDate({ dates, onRandomize }) {
           <MenuItem value="Romantic">Romantic</MenuItem>
           <MenuItem value="Adventure">Adventure</MenuItem>
           <MenuItem value="Relaxing">Relaxing</MenuItem>
+          <MenuItem value="Movie/TV Show">Movie/TV Show</MenuItem>
+          <MenuItem value="Culture">Culture</MenuItem>
+          <MenuItem value="Random">Random</MenuItem>
+          <MenuItem value="Food">Food</MenuItem>
+          <MenuItem value="Music">Music</MenuItem>
+          <MenuItem value="Shopping">Shopping</MenuItem>
         </Select>
       </FormControl>
-      <Button variant="contained" color="primary" onClick={handleRandomize}>
+      <Button 
+        variant="contained" 
+        color="secondary" 
+        onClick={handleRandomize}
+        startIcon={<Casino />}
+        sx={{ 
+          borderRadius: 20,
+          px: 3,
+        }}
+      >
         Randomize
       </Button>
     </Paper>
