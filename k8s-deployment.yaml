@@ -15,5 +15,6 @@ spec:
       containers:
       - name: idea-randomizer
         image: idea-randomizer:latest
+        imagePullPolicy: Never
         ports:
         - containerPort: 3000
