@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: idea-randomizer
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: idea-randomizer
+  template:
+    metadata:
+      labels:
+        app: idea-randomizer
+    spec:
+      containers:
+      - name: idea-randomizer
+        image: idea-randomizer:latest
+        ports:
+        - containerPort: 3000
