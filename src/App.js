@@ -5,7 +5,7 @@ import { Brightness4, Brightness7, Favorite, Hiking, Weekend, LocalMovies, Museu
 import DateList from './components/DateList';
 import AddDateForm from './components/AddDateForm';
 import RandomizeDate from './components/RandomizeDate';
-import { encodeConfig, decodeConfig } from './utils/configEncoder';
+import { encodeConfig, decodeConfig, encodeSeed, decodeSeed } from './utils/configEncoder';
 
 const getCategoryColors = (mode) => ({
   Romantic: mode === 'light' ? '#ffcccb' : '#4a3034',
@@ -76,38 +76,56 @@ function App() {
   const [openModal, setOpenModal] = useState(false);
   const [shareUrl, setShareUrl] = useState('');
   const [mode, setMode] = useState('light');
+  const [seed, setSeed] = useState('');
 
   const theme = React.useMemo(() => getTheme(mode), [mode]);
   const categoryColors = React.useMemo(() => getCategoryColors(mode), [mode]);
 
   useEffect(() => {
-    const hash = window.location.hash.substring(8);
-    if (hash) {
-      const decodedDates = decodeConfig(hash);
+    const hash = window.location.hash.substring(1);
+    const params = new URLSearchParams(hash);
+    const configParam = params.get('config');
+    const ivParam = params.get('iv');
+
+    if (configParam) {
+      const decodedDates = decodeConfig(configParam);
       setDates(decodedDates);
     }
-    updateShareUrl(dates);
-  }, [dates]); // Add dates to the dependency array
+    if (ivParam) {
+      const decodedSeed = decodeSeed(ivParam);
+      setSeed(decodedSeed);
+    }
+    updateShareUrl(dates, seed);
+  }, []);
 
   const addDate = (newDate) => {
     const updatedDates = [...dates, { id: dates.length + 1, ...newDate }];
     setDates(updatedDates);
     updateUrlHash(updatedDates);
-    updateShareUrl(updatedDates);
+    updateShareUrl(updatedDates, seed);
   };
 
-  const handleRandomize = (category) => {
+  const handleRandomize = (category, newSeed) => {
+    setSeed(newSeed);
     const filteredDates = category === 'All' ? dates : dates.filter(date => date.category === category);
-    const randomIndex = Math.floor(Math.random() * filteredDates.length);
+    
+    // Use a seeded random number generator
+    const seededRandom = (seed) => {
+      const x = Math.sin(seed++) * 10000;
+      return x - Math.floor(x);
+    };
+
+    const randomIndex = Math.floor(seededRandom(newSeed.split('').reduce((a, b) => a + b.charCodeAt(0), 0)) * filteredDates.length);
     setRandomDate(filteredDates[randomIndex]);
     setOpenModal(true);
+    updateShareUrl(dates, newSeed);
   };
 
   const deleteDate = (id) => {
     const updatedDates = dates.filter(date => date.id !== id);
     setDates(updatedDates);
     updateUrlHash(updatedDates);
-    updateShareUrl(updatedDates);
+    updateShareUrl(updatedDates, seed);
   };
 
   const updateUrlHash = (updatedDates) => {
@@ -115,10 +133,12 @@ function App() {
     window.location.hash = `config=${encodedConfig}`;
   };
 
-  const updateShareUrl = (updatedDates) => {
+  const updateShareUrl = (updatedDates, currentSeed) => {
     const encodedConfig = encodeConfig(updatedDates);
-    const url = `${window.location.origin}${window.location.pathname}#config=${encodedConfig}`;
+    const encodedSeed = encodeSeed(currentSeed);
+    const url = `${window.location.origin}${window.location.pathname}#config=${encodedConfig}&iv=${encodedSeed}`;
     setShareUrl(url);
+    window.history.replaceState(null, null, url);
   };
 
   const toggleMode = () => {
@@ -156,7 +176,7 @@ function App() {
           </Grid>
           <Fade in={true} timeout={800} style={{ transitionDelay: '400ms' }}>
             <Box mt={4}>
-              <RandomizeDate dates={dates} onRandomize={handleRandomize} />
+              <RandomizeDate dates={dates} onRandomize={handleRandomize} initialSeed={seed} />
             </Box>
           </Fade>
           <Modal 

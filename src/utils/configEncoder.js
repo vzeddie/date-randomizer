@@ -32,3 +32,16 @@ export const decodeConfig = (encodedConfig) => {
     return [];
   }
 };
+
+export const encodeSeed = (seed) => {
+  return compressToEncodedURIComponent(seed);
+};
+
+export const decodeSeed = (encodedSeed) => {
+  try {
+    return decompressFromEncodedURIComponent(encodedSeed);
+  } catch (error) {
+    console.error('Failed to decode seed:', error);
+    return '';
+  }
+};
