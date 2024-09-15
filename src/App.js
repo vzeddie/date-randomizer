@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Grid, Typography, Modal, Box, TextField, Paper, Fade, IconButton, Zoom } from '@mui/material';
+import { Container, Grid, Typography, Modal, Box, TextField, Paper, Fade, IconButton, Zoom, Button } from '@mui/material';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-import { Brightness4, Brightness7, Favorite, Hiking, Weekend, LocalMovies, Museum, Casino, Restaurant, MusicNote, ShoppingCart } from '@mui/icons-material';
+import { Brightness4, Brightness7, Favorite, Hiking, Weekend, LocalMovies, Museum, Casino, Restaurant, MusicNote, ShoppingCart, DeleteSweep } from '@mui/icons-material';
 import DateList from './components/DateList';
 import AddDateForm from './components/AddDateForm';
 import RandomizeDate from './components/RandomizeDate';
@@ -80,6 +80,12 @@ function App() {
 
   const theme = React.useMemo(() => getTheme(mode), [mode]);
   const categoryColors = React.useMemo(() => getCategoryColors(mode), [mode]);
+
+  const clearLocalStorage = () => {
+    localStorage.removeItem('dateConfig');
+    setDates(initialDates);
+    updateShareUrl(initialDates, '');
+  };
 
   useEffect(() => {
     const hash = window.location.hash.substring(1);
@@ -160,7 +166,16 @@ function App() {
     <ThemeProvider theme={theme}>
       <Box sx={{ bgcolor: 'background.default', minHeight: '100vh', transition: 'background-color 0.3s' }}>
         <Container maxWidth="lg">
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', pt: 2 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', pt: 2, gap: 1 }}>
+            <Button
+              onClick={clearLocalStorage}
+              startIcon={<DeleteSweep />}
+              variant="outlined"
+              color="error"
+              size="small"
+            >
+              Clear Saved Data
+            </Button>
             <IconButton onClick={toggleMode} color="inherit">
               {mode === 'dark' ? <Brightness7 /> : <Brightness4 />}
             </IconButton>
