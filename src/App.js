@@ -75,7 +75,7 @@ function App() {
   const [randomDate, setRandomDate] = useState(null);
   const [openModal, setOpenModal] = useState(false);
   const [shareUrl, setShareUrl] = useState('');
-  const [mode, setMode] = useState('light');
+  const [mode, setMode] = useState('dark');
   const [seed, setSeed] = useState('');
 
   const theme = React.useMemo(() => getTheme(mode), [mode]);
@@ -90,11 +90,20 @@ function App() {
     if (configParam) {
       const decodedDates = decodeConfig(configParam);
       setDates(decodedDates);
+      localStorage.setItem('dateConfig', configParam);
+    } else {
+      const storedConfig = localStorage.getItem('dateConfig');
+      if (storedConfig) {
+        const decodedDates = decodeConfig(storedConfig);
+        setDates(decodedDates);
+      }
     }
+
     if (ivParam) {
       const decodedSeed = decodeSeed(ivParam);
       setSeed(decodedSeed);
     }
+
     updateShareUrl(dates, seed);
   }, []);
 
@@ -103,6 +112,7 @@ function App() {
     setDates(updatedDates);
     updateUrlHash(updatedDates);
     updateShareUrl(updatedDates, seed);
+    localStorage.setItem('dateConfig', encodeConfig(updatedDates));
   };
 
   const handleRandomize = (category, newSeed) => {
@@ -126,6 +136,7 @@ function App() {
     setDates(updatedDates);
     updateUrlHash(updatedDates);
     updateShareUrl(updatedDates, seed);
+    localStorage.setItem('dateConfig', encodeConfig(updatedDates));
   };
 
   const updateUrlHash = (updatedDates) => {

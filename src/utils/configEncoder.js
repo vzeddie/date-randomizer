@@ -3,7 +3,13 @@ import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from
 const categoryMap = {
   'Romantic': 'R',
   'Adventure': 'A',
-  'Relaxing': 'X'
+  'Relaxing': 'X',
+  'Movie/TV Show': 'M',
+  'Culture': 'C',
+  'Random': 'N',
+  'Food': 'F',
+  'Music': 'U',
+  'Shopping': 'S'
 };
 
 const reverseCategoryMap = Object.fromEntries(

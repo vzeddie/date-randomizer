@@ -1,19 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Paper, Typography, Button, Select, MenuItem, FormControl, InputLabel, TextField, Box } from '@mui/material';
 import { Casino, Refresh } from '@mui/icons-material';
 
-function RandomizeDate({ dates, onRandomize, initialSeed }) {
+function RandomizeDate({ dates, onRandomize }) {
   const [category, setCategory] = useState('All');
-  const [seed, setSeed] = useState(initialSeed || '');
-
-  useEffect(() => {
-    if (initialSeed) {
-      setSeed(initialSeed);
-    }
-  }, [initialSeed]);
+  const [seed, setSeed] = useState('');
 
   const handleRandomize = () => {
-    onRandomize(category, seed);
+    const newSeed = seed || Math.random().toString(36).substring(2, 15);
+    onRandomize(category, newSeed);
   };
 
   const generateNewSeed = () => {
@@ -41,7 +36,7 @@ function RandomizeDate({ dates, onRandomize, initialSeed }) {
       </FormControl>
       <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
         <TextField
-          label="Seed"
+          label="Seed (optional)"
           value={seed}
           onChange={(e) => setSeed(e.target.value)}
           sx={{ flexGrow: 1, mr: 1 }}
