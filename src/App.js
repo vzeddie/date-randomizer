@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Grid, Typography, Modal, Box, TextField, Paper, Fade, IconButton, Zoom, Button } from '@mui/material';
+import { Container, Grid, Typography, Modal, Box, TextField, Paper, Fade, IconButton, Zoom, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { Brightness4, Brightness7, Favorite, Hiking, Weekend, LocalMovies, Museum, Casino, Restaurant, MusicNote, ShoppingCart, DeleteSweep } from '@mui/icons-material';
 import DateList from './components/DateList';
@@ -77,6 +77,7 @@ function App() {
   const [shareUrl, setShareUrl] = useState('');
   const [mode, setMode] = useState('dark');
   const [seed, setSeed] = useState('');
+  const [openClearDialog, setOpenClearDialog] = useState(false);
 
   const theme = React.useMemo(() => getTheme(mode), [mode]);
   const categoryColors = React.useMemo(() => getCategoryColors(mode), [mode]);
@@ -85,6 +86,7 @@ function App() {
     localStorage.removeItem('dateConfig');
     setDates(initialDates);
     updateShareUrl(initialDates, '');
+    setOpenClearDialog(false);
   };
 
   useEffect(() => {
@@ -93,24 +95,26 @@ function App() {
     const configParam = params.get('config');
     const ivParam = params.get('iv');
 
+    let newDates;
     if (configParam) {
-      const decodedDates = decodeConfig(configParam);
-      setDates(decodedDates);
+      newDates = decodeConfig(configParam);
       localStorage.setItem('dateConfig', configParam);
     } else {
       const storedConfig = localStorage.getItem('dateConfig');
       if (storedConfig) {
-        const decodedDates = decodeConfig(storedConfig);
-        setDates(decodedDates);
+        newDates = decodeConfig(storedConfig);
+      } else {
+        newDates = initialDates;
       }
     }
+    setDates(newDates);
 
     if (ivParam) {
       const decodedSeed = decodeSeed(ivParam);
       setSeed(decodedSeed);
     }
 
-    updateShareUrl(dates, seed);
+    updateShareUrl(newDates, ivParam ? decodeSeed(ivParam) : '');
   }, []);
 
   const addDate = (newDate) => {
@@ -168,7 +172,7 @@ function App() {
         <Container maxWidth="lg">
           <Box sx={{ display: 'flex', justifyContent: 'flex-end', pt: 2, gap: 1 }}>
             <Button
-              onClick={clearLocalStorage}
+              onClick={() => setOpenClearDialog(true)}
               startIcon={<DeleteSweep />}
               variant="outlined"
               color="error"
@@ -260,6 +264,27 @@ function App() {
           </Fade>
         </Container>
       </Box>
+      <Dialog
+        open={openClearDialog}
+        onClose={() => setOpenClearDialog(false)}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">{"Clear Saved Data?"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Are you sure you want to clear all saved date ideas? This action cannot be undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenClearDialog(false)} color="primary">
+            No
+          </Button>
+          <Button onClick={clearLocalStorage} color="error" autoFocus>
+            Yes, Clear Data
+          </Button>
+        </DialogActions>
+      </Dialog>
     </ThemeProvider>
   );
 }
